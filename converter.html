@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MARC-конвертор | Сучасна Бібліотека</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Бібліотека для читання Excel та CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --primary: #22A06B;
+            --primary-hover: #1e8b5d;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --success-bg: #DCFCE7;
+            --success-text: #166534;
+            --error-bg: #FEE2E2;
+            --error-text: #B91C1C;
+            --transition: all 0.2s ease;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-card: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --border-radius: 24px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 64px;
+        }
+
+        /* Header */
+        header {
+            display: flex;
+            align-items: center;
+            padding: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            transition: var(--transition);
+            margin-right: 16px;
+        }
+
+        .back-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .back-btn svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .hero { text-align: left; margin-bottom: 40px; }
+        .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
+        .hero p { color: var(--text-muted); font-size: 16px; max-width: 600px; }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .step-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #F3F4F6;
+            color: #4B5563;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 100px;
+            margin-bottom: 16px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .step-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        /* Drag & Drop Area (FIXED) */
+        .drop-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-color);
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: #F9FAFB;
+            width: 100%;
+        }
+
+        .drop-zone:hover, .drop-zone.dragover {
+            border-color: var(--primary);
+            background-color: #F0FDF4;
+        }
+
+        .drop-icon { 
+            width: 48px; 
+            height: 48px; 
+            margin-bottom: 16px; 
+            stroke: var(--primary);
+            opacity: 0.8;
+        }
+        
+        .drop-zone input { display: none; }
+        
+        .drop-title {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .drop-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        /* File Info Alert */
+        .alert {
+            display: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+        
+        .alert.success { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #BBF7D0; }
+        .alert.error { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #FECACA; }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background-color: var(--primary); color: white; box-shadow: 0 4px 12px rgba(34, 160, 107, 0.2); }
+        .btn-primary:hover { background-color: var(--primary-hover); }
+        .btn-secondary { background-color: #F3F4F6; color: var(--text-main); }
+        .btn-secondary:hover { background-color: #E5E7EB; }
+        .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--text-muted); }
+        
+        /* Table / Mapping Area */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            background-color: var(--card-bg);
+        }
+
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
+        th { background-color: #F9FAFB; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+        tr:last-child td { border-bottom: none; }
+        
+        .header-name { font-weight: 600; color: var(--text-main); }
+
+        .table-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: var(--text-main);
+            outline: none;
+            transition: var(--transition);
+            background-color: #F9FAFB;
+        }
+        .table-input:focus { border-color: var(--primary); background-color: white; box-shadow: 0 0 0 3px rgba(34, 160, 107, 0.1); }
+        .input-tag { width: 64px; text-align: center; }
+        .input-ind { width: 44px; text-align: center; }
+
+        .row-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* Leader Settings */
+        .leader-settings {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+            background-color: #F9FAFB;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+        @media (min-width: 600px) { .leader-settings { grid-template-columns: 1fr 1fr; } }
+        
+        .leader-field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;}
+        .leader-field select {
+            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px;
+            font-family: inherit; font-size: 14px; outline: none; background-color: white; font-weight: 500;
+        }
+        .leader-field select:focus { border-color: var(--primary); }
+
+        /* Code Preview */
+        .code-preview {
+            background-color: #111827;
+            color: #E5E7EB;
+            padding: 24px;
+            border-radius: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-top: 24px;
+        }
+        .code-preview .tag { color: #38BDF8; font-weight: 600; }
+        .code-preview .ind { color: #A78BFA; }
+        .code-preview .sub { color: #34D399; }
+    </style>
+</head>
+<body>
+
+<header>
+    <a href="index.html" class="back-btn" aria-label="На головну">
+        <svg viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    </a>
+    <div class="header-title">Сучасна Бібліотека</div>
+</header>
+
+<div class="container">
+    <section class="hero">
+        <h1>MARC-конвертор</h1>
+        <p>Інструмент для автоматизації створення машиночитних записів. Завантажте таблицю з книгами, налаштуйте поля і згенеруйте файл стандарту ISO 2709.</p>
+    </section>
+
+    <!-- STEP 1: DATA SOURCE -->
+    <div class="card">
+        <div class="step-badge">Крок 1</div>
+        <h2 class="step-title">Завантаження файлу</h2>
+        <p class="step-desc">Оберіть файл з вашими даними у форматі Excel або CSV.</p>
+
+        <label class="drop-zone" id="dropZone">
+            <input type="file" id="fileInput" accept=".xlsx,.xls,.csv">
+            <svg class="drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+            <div class="drop-title">Натисніть для вибору файлу</div>
+            <div class="drop-subtitle">або перетягніть його сюди (.xlsx, .csv)</div>
+        </label>
+
+        <div id="fileInfo" class="alert" style="display: none;"></div>
+    </div>
+
+    <!-- STEP 2: MAPPING -->
+    <div class="card" id="mappingCard" style="display: none;">
+        <div class="step-badge">Крок 2</div>
+        <h2 class="step-title">Налаштування полів MARC21</h2>
+        <p class="step-desc">Вкажіть, яким полям стандарту MARC21 відповідають колонки вашої таблиці.</p>
+
+        <div class="leader-settings">
+            <div class="leader-field">
+                <label>Тип запису (Leader 06)</label>
+                <select id="leaderType">
+                    <option value="a" selected>a — Текстовий матеріал (книга)</option>
+                    <option value="t">t — Рукопис</option>
+                    <option value="g">g — Проєкційний матеріал</option>
+                    <option value="i">i — Звукозапис (не музичний)</option>
+                </select>
+            </div>
+            <div class="leader-field">
+                <label>Бібліографічний рівень (Leader 07)</label>
+                <select id="leaderLevel">
+                    <option value="m" selected>m — Монографія / Одиниця</option>
+                    <option value="s">s — Серіальне видання</option>
+                    <option value="a">a — Складова частина (стаття)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Колонка з таблиці</th>
+                        <th style="width: 80px;">Тег</th>
+                        <th style="width: 70px;">Ind 1</th>
+                        <th style="width: 70px;">Ind 2</th>
+                        <th style="width: 70px;">$ код</th>
+                        <th style="text-align: center;">Пусті</th>
+                    </tr>
+                </thead>
+                <tbody id="mappingBody">
+                    <!-- Заповнюється через JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row-actions">
+            <button class="btn btn-secondary" id="autoGuessBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                Автовизначення
+            </button>
+            <button class="btn btn-outline" id="saveTemplateBtn">Зберегти шаблон</button>
+            <button class="btn btn-outline" id="loadTemplateBtn">Завантажити шаблон</button>
+            <input type="file" id="templateInput" accept=".json" style="display:none;">
+        </div>
+    </div>
+
+    <!-- STEP 3: EXPORT -->
+    <div class="card" id="convertCard" style="display: none;">
+        <div class="step-badge">Крок 3</div>
+        <h2 class="step-title">Генерація файлу</h2>
+        <p class="step-desc">Збережіть готовий файл у форматі .mrc для завантаження в АБІС.</p>
+        
+        <button class="btn btn-primary" id="convertBtn" style="width: 100%; font-size: 16px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            Завантажити файл .mrc (ISO 2709)
+        </button>
+        
+        <div id="statusBox" class="alert" style="display: none; margin-top: 16px;"></div>
+
+        <div id="previewWrap" style="display: none;">
+            <div class="code-preview" id="previewBox"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let headers = [];
+    let rows = [];
+
+    // DOM Elements
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const fileInfo = document.getElementById('fileInfo');
+    const mappingCard = document.getElementById('mappingCard');
+    const convertCard = document.getElementById('convertCard');
+    const mappingBody = document.getElementById('mappingBody');
+
+    // --- Show Status Alert ---
+    function showStatus(msg, type = 'success', el = fileInfo) {
+        el.style.display = 'flex';
+        el.className = `alert ${type}`;
+        el.innerHTML = type === 'success' 
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> ${msg}`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> ${msg}`;
+    }
+
+    // --- File Upload Logic ---
+    ['dragover','dragleave','drop'].forEach(evt=>{
+        dropZone.addEventListener(evt, e=>{
+            e.preventDefault();
+            if(evt==='dragover') dropZone.classList.add('dragover');
+            if(evt==='dragleave') dropZone.classList.remove('dragover');
+            if(evt==='drop'){
+                dropZone.classList.remove('dragover');
+                if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+            }
+        });
+    });
+    
+    fileInput.addEventListener('change', e => {
+        if(e.target.files.length) handleFile(e.target.files[0]);
+    });
+
+    function handleFile(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const wb = XLSX.read(data, {type:'array'});
+                const sheet = wb.Sheets[wb.SheetNames[0]];
+                const json = XLSX.utils.sheet_to_json(sheet, {defval:''});
+                
+                if (!json || json.length === 0) {
+                    showStatus('Файл порожній або не вдалося прочитати дані.', 'error');
+                    return;
+                }
+                
+                // Clean headers (remove MARC brackets if any, like in catalog)
+                const extractCleanLabel = (rawHeader) => {
+                    const match = rawHeader.match(/\(([^)]+)\)/);
+                    return match && match[1] ? match[1].trim() : rawHeader.trim();
+                };
+
+                rows = json.map(rawRow => {
+                    const cleanRow = {};
+                    for (const key in rawRow) {
+                        cleanRow[extractCleanLabel(key)] = rawRow[key];
+                    }
+                    return cleanRow;
+                });
+
+                headers = Object.keys(rows[0]);
+                
+                showStatus(`Завантажено файл "${file.name}" • ${rows.length} записів • ${headers.length} колонок`, 'success');
+                buildMappingTable();
+                mappingCard.style.display = 'block';
+                convertCard.style.display = 'block';
+                
+                // Scroll to mapping
+                mappingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } catch (err) {
+                showStatus('Сталася помилка при читанні файлу.', 'error');
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // --- Build UI Mapping Table ---
+    function buildMappingTable() {
+        mappingBody.innerHTML = '';
+        headers.forEach(h => {
+            const tr = document.createElement('tr');
+            tr.dataset.header = h;
+            tr.innerHTML = `
+                <td class="header-name">${h}</td>
+                <td><input class="table-input input-tag" maxlength="3" placeholder="245"></td>
+                <td><input class="table-input input-ind" maxlength="1" placeholder=" "></td>
+                <td><input class="table-input input-ind" maxlength="1" placeholder=" "></td>
+                <td><input class="table-input input-ind" maxlength="1" value="a"></td>
+                <td style="text-align:center;">
+                    <input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;" checked>
+                </td>
+            `;
+            mappingBody.appendChild(tr);
+        });
+    }
+
+    // --- Auto Guess Logic ---
+    const GUESS_RULES = [
+        [/автор|author/i,        {tag:'100', i1:'1', i2:' ', sub:'a'}],
+        [/назв|заголов|title/i,  {tag:'245', i1:'0', i2:'0', sub:'a'}],
+        [/відомості|subtitle/i,  {tag:'245', i1:'0', i2:'0', sub:'b'}],
+        [/відповідаль/i,         {tag:'245', i1:'0', i2:'0', sub:'c'}],
+        [/видан|edition/i,       {tag:'250', i1:' ', i2:' ', sub:'a'}],
+        [/видавниц|видавець|pub/i,{tag:'264', i1:' ', i2:'1', sub:'b'}],
+        [/місце/i,               {tag:'264', i1:' ', i2:'1', sub:'a'}],
+        [/^рік|дата|date|year/i, {tag:'264', i1:' ', i2:'1', sub:'c'}],
+        [/isbn/i,                {tag:'020', i1:' ', i2:' ', sub:'a'}],
+        [/удк|udc/i,             {tag:'080', i1:' ', i2:' ', sub:'a'}],
+        [/тема|subject|ключ/i,   {tag:'650', i1:' ', i2:'4', sub:'a'}],
+        [/обсяг|сторін|pages/i,  {tag:'300', i1:' ', i2:' ', sub:'a'}],
+        [/id|системн/i,          {tag:'001', i1:'', i2:'', sub:''}],
+        [/ресурс|url|посилан/i,  {tag:'856', i1:'4', i2:'0', sub:'u'}],
+    ];
+
+    document.getElementById('autoGuessBtn').addEventListener('click', () => {
+        [...mappingBody.children].forEach(tr => {
+            const h = tr.dataset.header;
+            const rule = GUESS_RULES.find(([re]) => re.test(h));
+            if(rule) {
+                const [,cfg] = rule;
+                tr.querySelector('.input-tag').value = cfg.tag;
+                const inds = tr.querySelectorAll('.input-ind');
+                inds[0].value = cfg.i1;
+                inds[1].value = cfg.i2;
+                inds[2].value = cfg.sub;
+            }
+        });
+    });
+
+    // --- Save/Load Templates ---
+    document.getElementById('saveTemplateBtn').addEventListener('click', () => {
+        const cfg = readMapping();
+        const blob = new Blob([JSON.stringify(cfg, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'marc21-template.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('loadTemplateBtn').addEventListener('click', () => document.getElementById('templateInput').click());
+    
+    document.getElementById('templateInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            try {
+                const cfg = JSON.parse(ev.target.result);
+                document.getElementById('leaderType').value = cfg.leaderType || 'a';
+                document.getElementById('leaderLevel').value = cfg.leaderLevel || 'm';
+                [...mappingBody.children].forEach(tr => {
+                    const h = tr.dataset.header;
+                    const m = (cfg.fields||[]).find(f => f.header === h);
+                    if(m) {
+                        tr.querySelector('.input-tag').value = m.tag || '';
+                        const inds = tr.querySelectorAll('.input-ind');
+                        inds[0].value = m.i1 || '';
+                        inds[1].value = m.i2 || '';
+                        inds[2].value = m.sub || '';
+                        tr.querySelector('input[type="checkbox"]').checked = m.skipEmpty !== false;
+                    }
+                });
+            } catch(err) {
+                alert('Не вдалося прочитати шаблон: ' + err.message);
+            }
+        };
+        reader.readAsText(file);
+    });
+
+    function readMapping() {
+        const fields = [...mappingBody.children].map(tr => {
+            const inputs = tr.querySelectorAll('input[type="text"]');
+            return {
+                header: tr.dataset.header,
+                tag: inputs[0].value.trim(),
+                i1: inputs[1].value || ' ',
+                i2: inputs[2].value || ' ',
+                sub: inputs[3].value || 'a',
+                skipEmpty: tr.querySelector('input[type="checkbox"]').checked
+            };
+        }).filter(f => f.tag);
+        
+        return {
+            leaderType: document.getElementById('leaderType').value,
+            leaderLevel: document.getElementById('leaderLevel').value,
+            fields
+        };
+    }
+
+    // --- MARC21 Generation Logic (ISO 2709 standard) ---
+    const FT = 0x1E; // Field terminator
+    const RT = 0x1D; // Record terminator
+    const SD = 0x1F; // Subfield delimiter
+
+    function pad(num, len) { return String(num).padStart(len, '0'); }
+
+    function concatBytes(arrays) {
+        const total = arrays.reduce((s,a) => s + a.length, 0);
+        const out = new Uint8Array(total);
+        let off = 0;
+        arrays.forEach(a => { out.set(a, off); off += a.length; });
+        return out;
+    }
+
+    function buildRecord(row, mapping, recordIndex) {
+        const byTag = new Map();
+        
+        mapping.fields.forEach(f => {
+            const raw = row[f.header];
+            const val = (raw === undefined || raw === null) ? '' : String(raw).trim();
+            if (val === '' && f.skipEmpty) return;
+            if (!byTag.has(f.tag)) byTag.set(f.tag, []);
+            byTag.get(f.tag).push({...f, val});
+        });
+
+        if(!byTag.has('001')) byTag.set('001', [{val: String(recordIndex + 10000)}]);
+
+        const enc = new TextEncoder();
+        const fieldBytesList = [];
+
+        const tags = [...byTag.keys()].sort((a,b) => {
+            const an = /^\d+$/.test(a) ? parseInt(a) : 999;
+            const bn = /^\d+$/.test(b) ? parseInt(b) : 999;
+            return an - bn;
+        });
+
+        tags.forEach(tag => {
+            const entries = byTag.get(tag);
+            const isControl = /^00[0-9]$/.test(tag);
+            let bodyBytes;
+            
+            if (isControl) {
+                const val = entries.map(e => e.val).join(' ');
+                bodyBytes = enc.encode(val);
+            } else {
+                const first = entries[0];
+                const ind1 = (first.i1 || ' ').padEnd(1).slice(0,1);
+                const ind2 = (first.i2 || ' ').padEnd(1).slice(0,1);
+                const parts = [enc.encode(ind1 + ind2)];
+                
+                entries.forEach(e => {
+                    if (e.val === '') return;
+                    parts.push(new Uint8Array([SD]));
+                    parts.push(enc.encode((e.sub || 'a').slice(0,1)));
+                    parts.push(enc.encode(e.val));
+                });
+                bodyBytes = concatBytes(parts);
+            }
+            
+            const withTerm = concatBytes([bodyBytes, new Uint8Array([FT])]);
+            fieldBytesList.push({tag, bytes: withTerm});
+        });
+
+        let dataBytes = concatBytes(fieldBytesList.map(f => f.bytes));
+        let dirEntries = [];
+        let pos = 0;
+        
+        fieldBytesList.forEach(f => {
+            const tag3 = f.tag.padEnd(3,'0').slice(0,3);
+            dirEntries.push(tag3 + pad(f.bytes.length, 4) + pad(pos, 5));
+            pos += f.bytes.length;
+        });
+        
+        const directoryBytes = concatBytes([enc.encode(dirEntries.join('')), new Uint8Array([FT])]);
+        const baseAddress = 24 + directoryBytes.length;
+        const recordLength = baseAddress + dataBytes.length + 1;
+
+        const leader = pad(recordLength, 5) + 'n' + mapping.leaderType + mapping.leaderLevel + ' a22' + pad(baseAddress, 5) + '  i 4500';
+        const leaderBytes = enc.encode(leader);
+        
+        return concatBytes([leaderBytes, directoryBytes, dataBytes, new Uint8Array([RT])]);
+    }
+
+    // Preview generation
+    function renderPreview(row, mapping, recordIndex) {
+        const byTag = new Map();
+        mapping.fields.forEach(f => {
+            const raw = row[f.header];
+            const val = (raw === undefined || raw === null) ? '' : String(raw).trim();
+            if(val === '' && f.skipEmpty) return;
+            if(!byTag.has(f.tag)) byTag.set(f.tag, []);
+            byTag.get(f.tag).push({...f, val});
+        });
+        
+        if(!byTag.has('001')) byTag.set('001', [{val: String(recordIndex + 10000)}]);
+        
+        const tags = [...byTag.keys()].sort((a,b) => {
+            const an = /^\d+$/.test(a) ? parseInt(a) : 999;
+            const bn = /^\d+$/.test(b) ? parseInt(b) : 999;
+            return an - bn;
+        });
+        
+        let html = '';
+        tags.forEach(tag => {
+            const entries = byTag.get(tag);
+            const isControl = /^00[0-9]$/.test(tag);
+            if(isControl) {
+                html += `<span class="tag">${tag}</span>    ${entries.map(e=>e.val).join(' ')}\n`;
+            } else {
+                const first = entries[0];
+                const inds = `<span class="ind">${first.i1||' '}${first.i2||' '}</span>`;
+                const sub = entries.filter(e=>e.val!=='').map(e=>`<span class="sub">$${e.sub||'a'}</span> ${e.val}`).join('  ');
+                html += `<span class="tag">${tag}</span> ${inds} ${sub}\n`;
+            }
+        });
+        return html;
+    }
+
+    document.getElementById('convertBtn').addEventListener('click', () => {
+        const mapping = readMapping();
+        const statusBox = document.getElementById('statusBox');
+        
+        if(!mapping.fields.length) {
+            showStatus('Не задано жодного тегу MARC. Заповніть хоча б одну колонку або натисніть «Автовизначення».', 'error', statusBox);
+            return;
+        }
+        
+        try {
+            const recordByteArrays = rows.map((row, i) => buildRecord(row, mapping, i));
+            const all = concatBytes(recordByteArrays);
+            
+            // Download file
+            const blob = new Blob([all], {type: 'application/marc'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'records.mrc';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showStatus(`Згенеровано файл: ${rows.length} записів, ${all.length} байт. Файл завантажується.`, 'success', statusBox);
+
+            // Show Preview
+            const previewWrap = document.getElementById('previewWrap');
+            const previewBox = document.getElementById('previewBox');
+            previewWrap.style.display = 'block';
+            previewBox.innerHTML = "// ПЕРЕГЛЯД ПЕРШОГО ЗАПИСУ\n\n" + renderPreview(rows[0], mapping, 0);
+            
+        } catch(err) {
+            showStatus(`Помилка конвертації: ${err.message}`, 'error', statusBox);
+        }
+    });
+</script>
+
+</body>
+</html>

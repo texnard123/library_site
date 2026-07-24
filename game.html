@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Гра: Міф чи правда? | Сучасні бібліотеки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --primary: #22A06B;
+            --primary-hover: #1e8b5d;
+            --secondary: #2D7FF9;
+            --correct: #16A34A;
+            --correct-bg: #DCFCE7;
+            --incorrect: #EF4444;
+            --incorrect-bg: #FEE2E2;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --fact-bg: #F0FDF4; /* Світло-зелений для цікавого факту */
+            --border-radius: 24px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-card: 0 10px 30px -10px rgba(31, 41, 55, 0.08);
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 600px; /* Трохи ширше для комфорту на планшетах */
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* --- HEADER --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: var(--transition);
+        }
+
+        .back-btn:active {
+            transform: scale(0.9);
+        }
+
+        .back-btn svg {
+            width: 24px;
+            height: 24px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+        }
+
+        .header-icon {
+            background-color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(34, 160, 107, 0.2);
+        }
+
+        .header-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #FFF;
+            stroke-width: 2;
+        }
+
+        /* --- PROGRESS --- */
+        .progress-section {
+            padding: 0 24px 24px;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: block;
+            text-align: center;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background-color: #E2E8F0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* --- MAIN CARD --- */
+        main {
+            flex: 1;
+            padding: 0 24px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(0,0,0,0.03);
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+
+        .illustration {
+            width: 160px;
+            height: 160px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .question-text {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* --- FEEDBACK --- */
+        .feedback-container {
+            display: none; /* Приховано за замовчуванням */
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .feedback-icon-wrapper {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        
+        .feedback-icon-wrapper.correct { background-color: var(--correct-bg); color: var(--correct); }
+        .feedback-icon-wrapper.incorrect { background-color: var(--incorrect-bg); color: var(--incorrect); }
+        
+        .feedback-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-title.correct { color: var(--correct); }
+        .feedback-title.incorrect { color: var(--incorrect); }
+
+        .explanation {
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        /* --- FACT CARD --- */
+        .fact-card {
+            background-color: var(--fact-bg);
+            border-radius: 16px;
+            padding: 20px;
+            width: 100%;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: slideUpFade 0.4s ease 0.2s forwards; /* Затримка появи */
+        }
+
+        .fact-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .fact-icon {
+            width: 36px;
+            height: 36px;
+            background-color: #DCFCE7;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .fact-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #166534;
+        }
+
+        .fact-text {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #14532D;
+        }
+
+        /* --- BUTTONS --- */
+        .controls {
+            display: flex;
+            gap: 16px;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 18px 16px;
+            border-radius: 20px;
+            border: none;
+            font-size: 17px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: scale(1) !important;
+        }
+
+        .btn-myth {
+            background-color: var(--incorrect-bg);
+            color: #B91C1C;
+        }
+
+        .btn-myth:not(:disabled):hover { background-color: #FECACA; }
+
+        .btn-truth {
+            background-color: var(--correct-bg);
+            color: #15803D;
+        }
+
+        .btn-truth:not(:disabled):hover { background-color: #BBF7D0; }
+
+        .btn-next {
+            background-color: var(--primary);
+            color: #FFF;
+            width: 100%;
+            display: none;
+            box-shadow: 0 8px 20px rgba(34, 160, 107, 0.2);
+            animation: slideUpFade 0.3s ease forwards;
+        }
+
+        .btn-next:hover { background-color: var(--primary-hover); }
+
+        /* --- END SCREEN --- */
+        #result-view {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background-color: #064E3B; /* Глибокий темно-зелений */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            padding: 32px;
+            color: #FFF;
+        }
+
+        .trophy {
+            width: 180px;
+            height: 180px;
+            margin-bottom: 24px;
+            animation: popIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .result-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .result-score {
+            font-size: 56px;
+            font-weight: 800;
+            color: #FDE047;
+            margin-bottom: 16px;
+            text-shadow: 0 4px 12px rgba(253, 224, 71, 0.2);
+        }
+
+        .result-subtitle {
+            font-size: 18px;
+            line-height: 1.4;
+            margin-bottom: 32px;
+            color: #D1FAE5;
+        }
+
+        .badge {
+            background: linear-gradient(135deg, #F59E0B, #D97706);
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 40px;
+            box-shadow: 0 8px 20px rgba(245, 158, 11, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-btn {
+            background-color: #FFF;
+            color: #064E3B;
+            width: 100%;
+            max-width: 320px;
+            padding: 18px;
+            border-radius: 20px;
+            font-size: 17px;
+            font-weight: 700;
+            border: none;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .result-btn.secondary {
+            background-color: rgba(255,255,255,0.15);
+            color: #FFF;
+        }
+
+        .result-btn:active { transform: scale(0.96); }
+
+        /* --- ANIMATIONS --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            70% { opacity: 1; transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        #confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 101;
+        }
+
+        /* SVG Styles */
+        .svg-flat { width: 100%; height: 100%; }
+        .svg-bg { fill: #E2E8F0; }
+        .svg-main { fill: #22A06B; }
+        .svg-accent { fill: #2D7FF9; }
+        .svg-yellow { fill: #FBBF24; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="back-btn" aria-label="Повернутися">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+        <h1 class="title">Міф чи правда?</h1>
+        <div class="header-icon">
+            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Quiz View -->
+    <div id="quiz-view">
+        <div class="progress-section">
+            <span class="progress-text" id="progress-text">Питання 1 із 10</span>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progress-bar"></div>
+            </div>
+        </div>
+
+        <main>
+            <div class="card">
+                <div class="illustration" id="illustration-container">
+                    <!-- Dynamic SVG inserted here -->
+                </div>
+                
+                <h2 class="question-text" id="question-text">Завантаження...</h2>
+
+                <!-- Feedback Area (Hidden until answer) -->
+                <div class="feedback-container" id="feedback-container">
+                    <div class="feedback-icon-wrapper" id="feedback-icon"></div>
+                    <h3 class="feedback-title" id="feedback-title">Правильно!</h3>
+                    <p class="explanation" id="explanation-text"></p>
+
+                    <div class="fact-card">
+                        <div class="fact-header">
+                            <div class="fact-icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M9 18h6"></path>
+                                    <path d="M10 22h4"></path>
+                                    <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                                </svg>
+                            </div>
+                            <span class="fact-title">Цікавий факт</span>
+                        </div>
+                        <p class="fact-text" id="fact-text"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls" id="controls">
+                <button class="btn btn-myth" onclick="handleAnswer(false)" id="btn-myth">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    Міф
+                </button>
+                <button class="btn btn-truth" onclick="handleAnswer(true)" id="btn-truth">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    Правда
+                </button>
+            </div>
+            <button class="btn btn-next" onclick="nextQuestion()" id="btn-next">Наступне питання →</button>
+        </main>
+    </div>
+
+    <!-- Results View -->
+    <div id="result-view">
+        <canvas id="confetti"></canvas>
+        <div class="trophy">
+            <svg viewBox="0 0 200 200" fill="none" class="svg-flat">
+                <!-- Flat Trophy -->
+                <path d="M100 160V130" stroke="#FDE047" stroke-width="16" stroke-linecap="round"/>
+                <path d="M70 160H130" stroke="#FDE047" stroke-width="16" stroke-linecap="round"/>
+                <path d="M50 50H150V90C150 117.614 127.614 140 100 140C72.3858 140 50 117.614 50 90V50Z" fill="#FDE047"/>
+                <path d="M50 60H30C24.4772 60 20 64.4772 20 70C20 86.5685 33.4315 100 50 100H55" stroke="#FDE047" stroke-width="12" stroke-linecap="round"/>
+                <path d="M150 60H170C175.523 60 180 64.4772 180 70C180 86.5685 166.569 100 150 100H145" stroke="#FDE047" stroke-width="12" stroke-linecap="round"/>
+                <circle cx="100" cy="90" r="15" fill="#CA8A04"/>
+            </svg>
+        </div>
+        <h2 class="result-title">Вітаємо!</h2>
+        <div class="result-score" id="final-score">10 із 10</div>
+        <p class="result-subtitle">Ви справжній знавець сучасних бібліотек!</p>
+        <div class="badge">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 15l-3 3m0 0l-3-3m3 3V9m6 6l3 3m0 0l3-3m-3 3V9M3 4h18v4H3z"/></svg>
+            Хранитель знань
+        </div>
+        <button class="result-btn" onclick="resetGame()">Пройти ще раз</button>
+        <button class="result-btn secondary" onclick="shareResult()">Поділитися результатом</button>
+        <a href="index.html" class="result-btn secondary" style="text-decoration: none; margin-top: 8px;">На головну</a>
+    </div>
+</div>
+
+<script>
+    // Modern Flat SVGs - 10 Unique Illustrations
+    const svgQ1 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Coworking / Silence Myth -->
+            <rect x="30" y="60" width="80" height="60" rx="16" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="6"/>
+            <path d="M50 120l-10 20 20-10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="6" stroke-linejoin="round"/>
+            <line x1="55" y1="80" x2="85" y2="80" stroke="#22A06B" stroke-width="6" stroke-linecap="round"/>
+            <line x1="55" y1="100" x2="75" y2="100" stroke="#2D7FF9" stroke-width="6" stroke-linecap="round"/>
+            
+            <rect x="90" y="40" width="80" height="60" rx="16" fill="#F0FDF4" stroke="#22A06B" stroke-width="6"/>
+            <path d="M150 100l10 20-20-10" fill="#F0FDF4" stroke="#22A06B" stroke-width="6" stroke-linejoin="round"/>
+            <circle cx="120" cy="70" r="6" fill="#FBBF24"/>
+            <circle cx="140" cy="70" r="6" fill="#2D7FF9"/>
+        </svg>
+    `;
+    
+    const svgQ2 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Digital ID / Smartphone -->
+            <rect x="60" y="30" width="80" height="140" rx="16" fill="#E2E8F0" />
+            <rect x="70" y="40" width="60" height="120" rx="8" fill="#FFFFFF" />
+            <circle cx="100" cy="70" r="16" fill="#22A06B" />
+            <rect x="85" y="100" width="30" height="6" rx="3" fill="#2D7FF9" />
+            <rect x="85" y="115" width="20" height="6" rx="3" fill="#E2E8F0" />
+            <circle cx="140" cy="40" r="12" fill="#FBBF24" />
+        </svg>
+    `;
+
+    const svgQ3 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Global Catalog 24/7 -->
+            <circle cx="100" cy="100" r="65" fill="#E2E8F0" />
+            <path d="M100 35c35 0 35 130 0 130S65 35 100 35z" fill="none" stroke="#FFFFFF" stroke-width="6"/>
+            <line x1="35" y1="100" x2="165" y2="100" stroke="#FFFFFF" stroke-width="6"/>
+            <circle cx="135" cy="135" r="25" fill="#FFFFFF" stroke="#2D7FF9" stroke-width="6"/>
+            <line x1="153" y1="153" x2="175" y2="175" stroke="#2D7FF9" stroke-width="8" stroke-linecap="round"/>
+            <circle cx="135" cy="135" r="8" fill="#22A06B"/>
+        </svg>
+    `;
+
+    const svgQ4 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Coding & 3D / Makerspace -->
+            <rect x="30" y="40" width="140" height="95" rx="8" fill="#E2E8F0" />
+            <rect x="40" y="50" width="120" height="75" rx="4" fill="#FFFFFF" />
+            <path d="M70 70L55 85l15 15M90 70l15 15-15 15" fill="none" stroke="#22A06B" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M125 70v30l25-15V55l-25 15z" fill="#2D7FF9" />
+            <path d="M100 55l25 15 25-15-25-15-25 15z" fill="#FBBF24" />
+            <path d="M85 135h30v15H85z" fill="#E2E8F0" />
+            <path d="M60 150h80v8H60z" fill="#E2E8F0" />
+        </svg>
+    `;
+
+    const svgQ5 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Gadget Renting -->
+            <rect x="40" y="30" width="120" height="140" rx="16" fill="#FFFFFF" stroke="#22A06B" stroke-width="8"/>
+            <rect x="55" y="45" width="90" height="110" rx="8" fill="#E2E8F0" />
+            <path d="M80 100a20 20 0 1 1 35-15 20 20 0 1 1-35 15z" fill="#FFFFFF" />
+            <circle cx="100" cy="115" r="22" fill="#2D7FF9" />
+            <path d="M100 105v15M93 113l7 7 7-7" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    `;
+
+    const svgQ6 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Digital Search Bar -->
+            <rect x="25" y="50" width="150" height="100" rx="12" fill="#E2E8F0" />
+            <rect x="45" y="80" width="110" height="40" rx="20" fill="#FFFFFF" />
+            <circle cx="65" cy="100" r="8" fill="none" stroke="#2D7FF9" stroke-width="4"/>
+            <line x1="71" y1="106" x2="77" y2="112" stroke="#2D7FF9" stroke-width="4" stroke-linecap="round"/>
+            <line x1="90" y1="100" x2="135" y2="100" stroke="#22A06B" stroke-width="6" stroke-linecap="round" stroke-dasharray="0 15"/>
+            <circle cx="45" cy="65" r="4" fill="#FBBF24"/>
+            <circle cx="60" cy="65" r="4" fill="#FFFFFF"/>
+        </svg>
+    `;
+
+    const svgQ7 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Scopus / Science Chart -->
+            <rect x="60" y="30" width="80" height="100" rx="8" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="6"/>
+            <line x1="75" y1="50" x2="110" y2="50" stroke="#2D7FF9" stroke-width="4" stroke-linecap="round"/>
+            <line x1="75" y1="65" x2="125" y2="65" stroke="#2D7FF9" stroke-width="4" stroke-linecap="round"/>
+            <rect x="40" y="90" width="120" height="80" rx="12" fill="#E2E8F0" />
+            <path d="M60 145v-30" stroke="#FBBF24" stroke-width="12" stroke-linecap="round"/>
+            <path d="M100 145v-50" stroke="#22A06B" stroke-width="12" stroke-linecap="round"/>
+            <path d="M140 145v-70" stroke="#2D7FF9" stroke-width="12" stroke-linecap="round"/>
+        </svg>
+    `;
+
+    const svgQ8 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Vinyl & VR & Games -->
+            <circle cx="70" cy="110" r="45" fill="#E2E8F0" />
+            <circle cx="70" cy="110" r="15" fill="#FFFFFF" />
+            <circle cx="70" cy="110" r="4" fill="#22A06B" />
+            <rect x="90" y="50" width="80" height="45" rx="12" fill="#FFFFFF" stroke="#2D7FF9" stroke-width="6"/>
+            <path d="M110 72h40" stroke="#22A06B" stroke-width="10" stroke-linecap="round"/>
+            <path d="M150 150l-15-40h10l5-15 5 15h10z" fill="#FBBF24" />
+        </svg>
+    `;
+
+    const svgQ9 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Open Science / Padlock -->
+            <path d="M50 100l50-50 50 50-50 50z" fill="none" stroke="#E2E8F0" stroke-width="6"/>
+            <circle cx="50" cy="100" r="10" fill="#2D7FF9"/>
+            <circle cx="150" cy="100" r="10" fill="#2D7FF9"/>
+            <circle cx="100" cy="150" r="10" fill="#2D7FF9"/>
+            <rect x="80" y="80" width="40" height="30" rx="8" fill="#22A06B" />
+            <path d="M90 80V60a10 10 0 0 1 20 0" fill="none" stroke="#22A06B" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="100" cy="95" r="4" fill="#FFFFFF"/>
+        </svg>
+    `;
+
+    const svgQ10 = `
+        <svg viewBox="0 0 200 200" class="svg-flat">
+            <!-- Podcasts / Media -->
+            <rect x="85" y="40" width="30" height="60" rx="15" fill="#FFFFFF" stroke="#2D7FF9" stroke-width="6"/>
+            <path d="M65 80v10a35 35 0 0 0 70 0v-10" fill="none" stroke="#E2E8F0" stroke-width="6" stroke-linecap="round"/>
+            <line x1="100" y1="125" x2="100" y2="150" stroke="#E2E8F0" stroke-width="6"/>
+            <line x1="80" y1="150" x2="120" y2="150" stroke="#E2E8F0" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="145" cy="55" r="20" fill="#22A06B" />
+            <path d="M145 62l-6-6a4 4 0 0 1 6-4 4 4 0 0 1 6 4z" fill="#FFFFFF" />
+            <circle cx="55" cy="120" r="15" fill="#FBBF24" />
+            <path d="M52 115v10l8-5z" fill="#FFFFFF" />
+        </svg>
+    `;
+
+    // Questions array focusing on Modern Ukrainian Libraries
+    const questions = [
+        {
+            text: "Сучасні бібліотеки — це виключно тихі місця, де не можна розмовляти.",
+            isTrue: false,
+            illustration: svgQ1,
+            explanation: "Хоча залишаються зони для тихого читання, більшість сучасних бібліотек мають коворкінги та простори для командної роботи.",
+            factText: "Науково-технічна бібліотека КПІ має сучасні відкриті простори (open spaces), де студенти вільно спілкуються та працюють над проєктами."
+        },
+        {
+            text: "Для запису в бібліотеку завжди потрібна паперова фотографія та довідка.",
+            isTrue: false,
+            illustration: svgQ2,
+            explanation: "Процедура значно спростилася. Багато закладів підтримують онлайн-запис та використовують цифрові документи.",
+            factText: "Електронний читацький квиток у вигляді штрих-коду або інтеграція з «Дією» поступово стає новим стандартом обслуговування."
+        },
+        {
+            text: "В Україні існують бібліотечні електронні каталоги, доступні онлайн 24/7.",
+            isTrue: true,
+            illustration: svgQ3,
+            explanation: "Сучасні каталоги адаптовані для ПК та мобільних пристроїв і доступні з будь-якої точки світу.",
+            factText: "Національна бібліотека України імені В. І. Вернадського розвиває потужні електронні колекції (портал «Україніка»), доступні дистанційно."
+        },
+        {
+            text: "Бібліотеки не мають нічого спільного з програмуванням чи 3D-моделюванням.",
+            isTrue: false,
+            illustration: svgQ4,
+            explanation: "Сьогодні бібліотеки створюють мейкерспейси (Makerspaces), де можна скористатися 3D-принтерами та спеціалізованим ПЗ.",
+            factText: "Бібліотеки перетворюються на центри цифрової грамотності, де кожен може створювати власні проєкти чи вивчати програмування."
+        },
+        {
+            text: "Деякі бібліотеки в Україні пропонують послугу оренди електронних книг (гаджетів).",
+            isTrue: true,
+            illustration: svgQ5,
+            explanation: "Для подолання цифрової нерівності заклади надають техніку у тимчасове користування своїм читачам.",
+            factText: "В рамках проєкту «Дія.Цифрова освіта» багато українських бібліотек стали хабами, де можна скористатися технікою."
+        },
+        {
+            text: "Пошук книг досі відбувається переважно через дерев'яні ящички з картками.",
+            isTrue: false,
+            illustration: svgQ6,
+            explanation: "Паперові каталоги залишилися переважно як історія. Основою сучасного пошуку є виключно електронні системи.",
+            factText: "Сучасні автоматизовані бібліотечні інформаційні системи дозволяють за мілісекунди шукати дані серед мільйонів записів."
+        },
+        {
+            text: "Бібліотекарі активно допомагають науковцям з публікаціями у міжнародних базах.",
+            isTrue: true,
+            illustration: svgQ7,
+            explanation: "Фахівці консультують дослідників щодо їхнього профілю, індексів цитування та роботи з базами даних.",
+            factText: "Бібліографи провідних університетів України здійснюють моніторинг публікаційної активності у Scopus та Web of Science."
+        },
+        {
+            text: "У бібліотеках можна знайти лише художню літературу та підручники.",
+            isTrue: false,
+            illustration: svgQ8,
+            explanation: "Сучасний фонд включає настільні ігри, вінілові платівки, комікси, VR-окуляри та навіть музичні інструменти.",
+            factText: "Молодіжні бібліотеки України активно формують фонди артбуків, графічних романів та настільних ігор для дозвілля."
+        },
+        {
+            text: "Відкрита наука (Open Science) активно підтримується сучасними бібліотеками.",
+            isTrue: true,
+            illustration: svgQ9,
+            explanation: "Бібліотекарі адмініструють інституційні репозитарії та допомагають публікувати дані у відкритому доступі.",
+            factText: "Це робить наукові дослідження українських вчених доступними для всієї світової спільноти безкоштовно."
+        },
+        {
+            text: "Українські бібліотеки створюють власні подкасти та ведуть соцмережі.",
+            isTrue: true,
+            illustration: svgQ10,
+            explanation: "Бібліотеки є сучасними медіацентрами, які генерують власний контент і комунікують з аудиторією онлайн.",
+            factText: "Багато обласних та юнацьких бібліотек мають популярні сторінки в Instagram та TikTok, де популяризують читання серед молоді."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // DOM Elements
+    const qText = document.getElementById('question-text');
+    const illustrationContainer = document.getElementById('illustration-container');
+    const progressText = document.getElementById('progress-text');
+    const progressBar = document.getElementById('progress-bar');
+    const controls = document.getElementById('controls');
+    const btnNext = document.getElementById('btn-next');
+    const btnMyth = document.getElementById('btn-myth');
+    const btnTruth = document.getElementById('btn-truth');
+    
+    const feedbackContainer = document.getElementById('feedback-container');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const explanationText = document.getElementById('explanation-text');
+    const factText = document.getElementById('fact-text');
+    
+    const quizView = document.getElementById('quiz-view');
+    const resultView = document.getElementById('result-view');
+    const finalScore = document.getElementById('final-score');
+
+    const iconCorrectSVG = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+    const iconIncorrectSVG = `<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+
+    function initGame() {
+        currentQuestionIndex = 0;
+        score = 0;
+        resultView.style.display = 'none';
+        quizView.style.display = 'block';
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const q = questions[currentQuestionIndex];
+        
+        // Reset View
+        qText.style.display = 'block';
+        feedbackContainer.style.display = 'none';
+        controls.style.display = 'flex';
+        btnNext.style.display = 'none';
+        btnMyth.disabled = false;
+        btnTruth.disabled = false;
+        
+        // Populate Data
+        qText.innerText = q.text;
+        illustrationContainer.innerHTML = q.illustration;
+        
+        // Update Progress
+        const qNum = currentQuestionIndex + 1;
+        progressText.innerText = `Питання ${qNum} із ${questions.length}`;
+        progressBar.style.width = `${(qNum / questions.length) * 100}%`;
+    }
+
+    function handleAnswer(userChoiceIsTrue) {
+        const q = questions[currentQuestionIndex];
+        const isCorrect = userChoiceIsTrue === q.isTrue;
+        
+        if (isCorrect) score++;
+
+        // Lock buttons
+        btnMyth.disabled = true;
+        btnTruth.disabled = true;
+
+        // Hide question text smoothly
+        qText.style.display = 'none';
+
+        // Set feedback content
+        feedbackIcon.className = `feedback-icon-wrapper ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedbackIcon.innerHTML = isCorrect ? iconCorrectSVG : iconIncorrectSVG;
+        
+        feedbackTitle.className = `feedback-title ${isCorrect ? 'correct' : 'incorrect'}`;
+        feedbackTitle.innerText = isCorrect ? "Правильно!" : "Не зовсім…";
+        
+        explanationText.innerText = q.explanation;
+        factText.innerText = q.factText;
+
+        // Show feedback and next button
+        controls.style.display = 'none';
+        feedbackContainer.style.display = 'flex';
+        btnNext.style.display = 'flex';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex >= questions.length) {
+            showResults();
+        } else {
+            renderQuestion();
+        }
+    }
+
+    function showResults() {
+        quizView.style.display = 'none';
+        resultView.style.display = 'flex';
+        finalScore.innerText = `${score} із ${questions.length}`;
+        triggerConfetti();
+    }
+
+    function resetGame() {
+        initGame();
+    }
+
+    function shareResult() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Мій результат у грі про бібліотеки',
+                text: `Я відповів правильно на ${score} з ${questions.length} питань у грі «Міф чи правда?»! Дізнайтеся більше про сучасні бібліотеки.`,
+                url: window.location.href
+            }).catch(console.error);
+        } else {
+            // Fallback to clipboard copy
+            try {
+                const dummy = document.createElement('input');
+                document.body.appendChild(dummy);
+                dummy.value = `Мій результат: ${score}/${questions.length} у грі «Міф чи правда?».`;
+                dummy.select();
+                document.execCommand('copy');
+                document.body.removeChild(dummy);
+                alert('Результат скопійовано в буфер обміну!');
+            } catch (err) {
+                alert('Результат: ' + score + ' із ' + questions.length);
+            }
+        }
+    }
+
+    // Canvas Confetti
+    function triggerConfetti() {
+        const canvas = document.getElementById('confetti');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const pieces = [];
+        const colors = ['#FDE047', '#22A06B', '#2D7FF9', '#EF4444', '#FFFFFF'];
+
+        for (let i = 0; i < 80; i++) {
+            pieces.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height - canvas.height,
+                w: Math.random() * 10 + 5,
+                h: Math.random() * 10 + 5,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vy: Math.random() * 3 + 3,
+                vx: Math.random() * 2 - 1,
+                rot: Math.random() * 360,
+                rotSpeed: Math.random() * 5 - 2.5
+            });
+        }
+
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+            pieces.forEach(p => {
+                p.y += p.vy;
+                p.x += p.vx;
+                p.rot += p.rotSpeed;
+                if (p.y < canvas.height) active = true;
+
+                ctx.save();
+                ctx.translate(p.x, p.y);
+                ctx.rotate(p.rot * Math.PI / 180);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                ctx.restore();
+            });
+
+            if (active) {
+                requestAnimationFrame(update);
+            }
+        }
+        update();
+    }
+
+    // Start Game on load
+    window.onload = initGame;
+</script>
+
+</body>
+</html>

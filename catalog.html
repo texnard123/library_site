@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Електронний каталог | Сучасні бібліотеки</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Підключення PapaParse для читання Google Таблиці -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #FAFAFA;
+            --card-bg: #FFFFFF;
+            --primary: #22A06B;
+            --primary-hover: #1e8b5d;
+            --secondary: #2D7FF9;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --bg-modal: rgba(17, 24, 39, 0.4);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: var(--text-main);
+            transition: var(--transition);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+
+        .back-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .back-btn svg {
+            width: 20px;
+            height: 20px;
+            stroke: currentColor;
+            stroke-width: 2.5;
+        }
+
+        .title {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .hero {
+            padding: 32px 0;
+        }
+
+        .hero h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 600px;
+            margin-bottom: 32px;
+        }
+
+        .search-container {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px 16px 48px;
+            font-size: 16px;
+            font-family: inherit;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(34, 160, 107, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            stroke: var(--text-muted);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+            font-weight: 500;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 64px;
+        }
+
+        @media (min-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+        }
+
+        .book-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 24px;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            appearance: none;
+        }
+
+        .book-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .book-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #F0FDF4;
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .book-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-author {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            flex-grow: 1;
+        }
+
+        .book-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-modal);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end; /* Для мобільних знизу */
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-card {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            border-radius: 24px 24px 0 0;
+            padding: 32px 24px;
+            overflow-y: auto;
+            position: relative;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 600px) {
+            .modal-overlay {
+                align-items: center;
+            }
+            .modal-card {
+                border-radius: 24px;
+                transform: translateY(20px) scale(0.95);
+            }
+            .modal-overlay.active .modal-card {
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: translateY(0); /* Для мобільних */
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 32px;
+            height: 32px;
+            background-color: var(--bg-color);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background-color: #FEE2E2;
+            color: #EF4444;
+        }
+
+        .modal-header-info {
+            margin-bottom: 24px;
+            padding-right: 40px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+
+        .modal-author {
+            font-size: 16px;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Segmented Control (Tabs) */
+        .tabs {
+            display: flex;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 24px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .tab-btn.active {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Fields List */
+        .fields-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .field-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--bg-color);
+        }
+
+        .field-row:last-child {
+            border-bottom: none;
+        }
+
+        .field-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .field-value {
+            font-size: 15px;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+        
+        .field-value a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .field-value a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <a href="index.html" class="back-btn" aria-label="Повернутися на головну">
+            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </a>
+        <div class="title">Електронний каталог</div>
+        <div style="width: 40px;"></div> <!-- Placeholder for flex spacing -->
+    </header>
+
+    <main>
+        <section class="hero">
+            <h1>Пошук видань</h1>
+            <p>Цей каталог автоматично генерується з робочої таблиці. Наша система самостійно розпізнає та очищає MARC-коди, роблячи дані зрозумілими для читача.</p>
+            
+            <div class="search-container">
+                <svg class="search-icon" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" class="search-input" placeholder="Шукати за назвою або автором...">
+            </div>
+        </section>
+
+        <div id="statusMessage" class="status-message">
+            Завантаження даних з Google Таблиці...
+        </div>
+
+        <div id="catalogGrid" class="grid" style="display: none;">
+            <!-- Картки генеруються через JS -->
+        </div>
+    </main>
+</div>
+
+<!-- Modal -->
+<div id="bookModal" class="modal-overlay">
+    <div class="modal-card">
+        <button class="modal-close" id="modalClose">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <div class="modal-header-info">
+            <div id="modalTitle" class="modal-title">Назва книги</div>
+            <div id="modalAuthor" class="modal-author">Автор</div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" data-target="tabSimple">Стисло</button>
+            <button class="tab-btn" data-target="tabDetailed">Детально</button>
+        </div>
+
+        <div id="tabSimple" class="fields-list"></div>
+        <div id="tabDetailed" class="fields-list" style="display: none;"></div>
+    </div>
+</div>
+
+<script>
+    // Налаштування доступу до вашої Google Таблиці
+    const SHEET_ID = "1Sdrh7b00gDxXr4AL9OcCjhqcc902SfWM3T8pBohAU-E";
+    const SHEET_GID = "1427145578";
+    const CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+
+    let allBooks = []; // Глобальний масив для зберігання всіх записів
+
+    // DOM Елементи
+    const statusEl = document.getElementById("statusMessage");
+    const gridEl = document.getElementById("catalogGrid");
+    const searchInput = document.getElementById("searchInput");
+    
+    // Елементи модалки
+    const modal = document.getElementById("bookModal");
+    const modalClose = document.getElementById("modalClose");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalAuthor = document.getElementById("modalAuthor");
+    const tabSimple = document.getElementById("tabSimple");
+    const tabDetailed = document.getElementById("tabDetailed");
+    const tabButtons = document.querySelectorAll(".tab-btn");
+
+    /**
+     * Функція, яка бере заголовок з таблиці виду "100$a (Автор)" 
+     * і повертає лише те, що в дужках: "Автор"
+     */
+    function extractCleanLabel(rawHeader) {
+        const match = rawHeader.match(/\(([^)]+)\)/);
+        if (match && match[1]) {
+            return match[1].trim();
+        }
+        return rawHeader.trim();
+    }
+
+    /**
+     * Перетворює сирий рядок CSV у зручний об'єкт з чистими ключами
+     */
+    function processRawRow(rawRow) {
+        const cleanRow = {};
+        for (const rawKey in rawRow) {
+            const cleanKey = extractCleanLabel(rawKey);
+            cleanRow[cleanKey] = (rawRow[rawKey] || "").toString().trim();
+        }
+        return cleanRow;
+    }
+
+    // Запуск парсингу через PapaParse
+    Papa.parse(CSV_URL, {
+        download: true,
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+            if (!results.data || results.data.length === 0) {
+                statusEl.textContent = "Таблиця порожня або недоступна.";
+                return;
+            }
+
+            // Формуємо фінальний масив книг
+            allBooks = results.data.map(rawRow => {
+                const cleanData = processRawRow(rawRow);
+                return {
+                    title: cleanData["Назва"] || "Без назви",
+                    author: cleanData["Автор"] || "Невідомий автор",
+                    year: cleanData["Рік видання"] || "",
+                    topic: cleanData["Тематика"] || "",
+                    isbn: cleanData["ISBN"] || "",
+                    notes: cleanData["Відомості, що відносяться до назви"] || "",
+                    responsibility: cleanData["Відомості про відповідальність"] || "",
+                    edition: cleanData["Видання"] || "",
+                    place: cleanData["Місце видання"] || "",
+                    publisher: cleanData["Видавець"] || "",
+                    volume: cleanData["Обсяг"] || "",
+                    udc: cleanData["УДК"] || "",
+                    link: cleanData["Ел. ресурс"] || "",
+                    fullData: cleanData // Зберігаємо всі чисті дані для рендерингу
+                };
+            }).filter(book => book.title !== "Без назви" || book.author !== "Невідомий автор"); // Відсіюємо порожні рядки
+
+            statusEl.style.display = "none";
+            gridEl.style.display = "grid";
+            renderGrid(allBooks);
+        },
+        error: function(error) {
+            console.error("Помилка парсингу:", error);
+            statusEl.textContent = "Помилка завантаження. Перевірте, чи відкритий доступ до таблиці за посиланням.";
+        }
+    });
+
+    function renderGrid(books) {
+        gridEl.innerHTML = "";
+        
+        if (books.length === 0) {
+            gridEl.style.display = "none";
+            statusEl.style.display = "block";
+            statusEl.textContent = "Нічого не знайдено за цим запитом.";
+            return;
+        }
+
+        gridEl.style.display = "grid";
+        statusEl.style.display = "none";
+
+        books.forEach((book, index) => {
+            const card = document.createElement("button");
+            card.className = "book-card";
+            card.onclick = () => openModal(book);
+
+            let tagsHtml = "";
+            if (book.year) tagsHtml += `<span class="tag">${book.year}</span>`;
+            if (book.topic) {
+                // Беремо перше слово/фразу до коми для короткого тегу
+                const shortTopic = book.topic.split(',')[0].trim();
+                tagsHtml += `<span class="tag">${shortTopic}</span>`;
+            }
+
+            card.innerHTML = `
+                <div class="book-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div class="book-title">${escapeHtml(book.title)}</div>
+                <div class="book-author">${escapeHtml(book.author)}</div>
+                <div class="book-tags">${tagsHtml}</div>
+            `;
+            gridEl.appendChild(card);
+        });
+    }
+
+    // Пошук
+    searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        if (!query) {
+            renderGrid(allBooks);
+            return;
+        }
+        
+        const filtered = allBooks.filter(book => 
+            book.title.toLowerCase().includes(query) || 
+            book.author.toLowerCase().includes(query)
+        );
+        renderGrid(filtered);
+    });
+
+    function escapeHtml(str) {
+        if (!str) return "";
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    function createFieldRow(label, value, isLink = false) {
+        if (!value) return "";
+        let valHtml = escapeHtml(value);
+        if (isLink && value.startsWith('http')) {
+            valHtml = `<a href="${valHtml}" target="_blank" rel="noopener noreferrer">Перейти до ресурсу →</a>`;
+        }
+        return `
+            <div class="field-row">
+                <span class="field-label">${escapeHtml(label)}</span>
+                <span class="field-value">${valHtml}</span>
+            </div>
+        `;
+    }
+
+    function openModal(book) {
+        modalTitle.textContent = book.title;
+        modalAuthor.textContent = book.author || "";
+
+        // Формуємо вкладку "Стисло"
+        tabSimple.innerHTML = 
+            createFieldRow("Автор", book.author) +
+            createFieldRow("Рік видання", book.year) +
+            createFieldRow("Видавець", book.publisher) +
+            createFieldRow("Тематика", book.topic) +
+            createFieldRow("Обсяг", book.volume) +
+            createFieldRow("Електронний ресурс", book.link, true);
+
+        // Формуємо вкладку "Детально" (всі поля, які є)
+        let detailedHtml = "";
+        for (const [key, value] of Object.entries(book.fullData)) {
+            if (key === "Ел. ресурс") {
+                detailedHtml += createFieldRow(key, value, true);
+            } else {
+                detailedHtml += createFieldRow(key, value);
+            }
+        }
+        tabDetailed.innerHTML = detailedHtml;
+
+        // Показуємо модалку
+        modal.classList.add("active");
+        document.body.style.overflow = "hidden"; // Блокуємо скрол фону
+        
+        // Скидаємо на першу вкладку
+        tabButtons[0].click();
+    }
+
+    function closeModal() {
+        modal.classList.remove("active");
+        document.body.style.overflow = "";
+    }
+
+    // Закриття модалки
+    modalClose.addEventListener("click", closeModal);
+    modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeModal();
+    });
+
+    // Перемикання вкладок
+    tabButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            
+            const targetId = btn.getAttribute("data-target");
+            if (targetId === "tabSimple") {
+                tabSimple.style.display = "flex";
+                tabDetailed.style.display = "none";
+            } else {
+                tabSimple.style.display = "none";
+                tabDetailed.style.display = "flex";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
