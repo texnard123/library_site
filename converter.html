@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
+
     <!-- Бібліотека для читання Excel та CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
@@ -41,7 +41,6 @@
             padding-bottom: 64px;
         }
 
-        /* Header */
         header {
             display: flex;
             align-items: center;
@@ -91,7 +90,6 @@
         .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.02em; }
         .hero p { color: var(--text-muted); font-size: 16px; max-width: 600px; }
 
-        /* Cards */
         .card {
             background-color: var(--card-bg);
             border-radius: var(--border-radius);
@@ -115,19 +113,9 @@
             text-transform: uppercase;
         }
 
-        .step-title {
-            font-size: 22px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
+        .step-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .step-desc { color: var(--text-muted); margin-bottom: 24px; font-size: 15px; }
 
-        .step-desc {
-            color: var(--text-muted);
-            margin-bottom: 24px;
-            font-size: 15px;
-        }
-
-        /* Drag & Drop Area (FIXED) */
         .drop-zone {
             display: flex;
             flex-direction: column;
@@ -148,45 +136,24 @@
             background-color: #F0FDF4;
         }
 
-        .drop-icon { 
-            width: 48px; 
-            height: 48px; 
-            margin-bottom: 16px; 
-            stroke: var(--primary);
-            opacity: 0.8;
-        }
-        
+        .drop-icon { width: 48px; height: 48px; margin-bottom: 16px; stroke: var(--primary); opacity: 0.8; }
         .drop-zone input { display: none; }
-        
-        .drop-title {
-            font-weight: 600;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-        
-        .drop-subtitle {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+        .drop-title { font-weight: 600; color: var(--text-main); margin-bottom: 8px; font-size: 16px; }
+        .drop-subtitle { color: var(--text-muted); font-size: 14px; }
 
-        /* File Info Alert */
         .alert {
             display: none;
             padding: 16px;
             border-radius: 12px;
             font-weight: 500;
             margin-top: 16px;
-            display: flex;
             align-items: center;
             gap: 12px;
             font-size: 14px;
         }
-        
         .alert.success { background-color: var(--success-bg); color: var(--success-text); border: 1px solid #BBF7D0; }
         .alert.error { background-color: var(--error-bg); color: var(--error-text); border: 1px solid #FECACA; }
 
-        /* Buttons */
         .btn {
             padding: 14px 24px;
             border-radius: 12px;
@@ -207,8 +174,7 @@
         .btn-secondary:hover { background-color: #E5E7EB; }
         .btn-outline { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-main); }
         .btn-outline:hover { border-color: var(--text-muted); }
-        
-        /* Table / Mapping Area */
+
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -222,8 +188,8 @@
         th, td { padding: 16px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
         th { background-color: #F9FAFB; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
         tr:last-child td { border-bottom: none; }
-        
         .header-name { font-weight: 600; color: var(--text-main); }
+        .header-name small { display:block; font-weight: 400; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; font-size: 12px; margin-top: 2px; }
 
         .table-input {
             width: 100%;
@@ -241,13 +207,8 @@
         .input-tag { width: 64px; text-align: center; }
         .input-ind { width: 44px; text-align: center; }
 
-        .row-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
+        .row-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
-        /* Leader Settings */
         .leader-settings {
             display: grid;
             grid-template-columns: 1fr;
@@ -259,7 +220,7 @@
             border: 1px solid var(--border-color);
         }
         @media (min-width: 600px) { .leader-settings { grid-template-columns: 1fr 1fr; } }
-        
+
         .leader-field label { display: block; font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;}
         .leader-field select {
             width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 10px;
@@ -267,7 +228,6 @@
         }
         .leader-field select:focus { border-color: var(--primary); }
 
-        /* Code Preview */
         .code-preview {
             background-color: #111827;
             color: #E5E7EB;
@@ -278,6 +238,7 @@
             line-height: 1.6;
             overflow-x: auto;
             margin-top: 24px;
+            white-space: pre;
         }
         .code-preview .tag { color: #38BDF8; font-weight: 600; }
         .code-preview .ind { color: #A78BFA; }
@@ -324,7 +285,7 @@
     <div class="card" id="mappingCard" style="display: none;">
         <div class="step-badge">Крок 2</div>
         <h2 class="step-title">Налаштування полів MARC21</h2>
-        <p class="step-desc">Вкажіть, яким полям стандарту MARC21 відповідають колонки вашої таблиці.</p>
+        <p class="step-desc">Якщо заголовки колонок вже містять тег MARC (наприклад «245$a (Назва)»), поля підставляються автоматично. Інакше натисніть «Автовизначення» або впишіть теги вручну.</p>
 
         <div class="leader-settings">
             <div class="leader-field">
@@ -380,12 +341,12 @@
         <div class="step-badge">Крок 3</div>
         <h2 class="step-title">Генерація файлу</h2>
         <p class="step-desc">Збережіть готовий файл у форматі .mrc для завантаження в АБІС.</p>
-        
+
         <button class="btn btn-primary" id="convertBtn" style="width: 100%; font-size: 16px;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
             Завантажити файл .mrc (ISO 2709)
         </button>
-        
+
         <div id="statusBox" class="alert" style="display: none; margin-top: 16px;"></div>
 
         <div id="previewWrap" style="display: none;">
@@ -396,10 +357,10 @@
 </div>
 
 <script>
-    let headers = [];
+    let headers = [];      // clean display labels
+    let rawHeaders = [];   // original header text (used for tag/subfield auto-parse)
     let rows = [];
 
-    // DOM Elements
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
     const fileInfo = document.getElementById('fileInfo');
@@ -407,16 +368,14 @@
     const convertCard = document.getElementById('convertCard');
     const mappingBody = document.getElementById('mappingBody');
 
-    // --- Show Status Alert ---
     function showStatus(msg, type = 'success', el = fileInfo) {
         el.style.display = 'flex';
         el.className = `alert ${type}`;
-        el.innerHTML = type === 'success' 
+        el.innerHTML = type === 'success'
             ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> ${msg}`
             : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg> ${msg}`;
     }
 
-    // --- File Upload Logic ---
     ['dragover','dragleave','drop'].forEach(evt=>{
         dropZone.addEventListener(evt, e=>{
             e.preventDefault();
@@ -428,67 +387,131 @@
             }
         });
     });
-    
+
     fileInput.addEventListener('change', e => {
         if(e.target.files.length) handleFile(e.target.files[0]);
     });
 
-    function handleFile(file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const data = new Uint8Array(e.target.result);
-                const wb = XLSX.read(data, {type:'array'});
-                const sheet = wb.Sheets[wb.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(sheet, {defval:''});
-                
-                if (!json || json.length === 0) {
-                    showStatus('Файл порожній або не вдалося прочитати дані.', 'error');
-                    return;
-                }
-                
-                // Clean headers (remove MARC brackets if any, like in catalog)
-                const extractCleanLabel = (rawHeader) => {
-                    const match = rawHeader.match(/\(([^)]+)\)/);
-                    return match && match[1] ? match[1].trim() : rawHeader.trim();
-                };
-
-                rows = json.map(rawRow => {
-                    const cleanRow = {};
-                    for (const key in rawRow) {
-                        cleanRow[extractCleanLabel(key)] = rawRow[key];
-                    }
-                    return cleanRow;
-                });
-
-                headers = Object.keys(rows[0]);
-                
-                showStatus(`Завантажено файл "${file.name}" • ${rows.length} записів • ${headers.length} колонок`, 'success');
-                buildMappingTable();
-                mappingCard.style.display = 'block';
-                convertCard.style.display = 'block';
-                
-                // Scroll to mapping
-                mappingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } catch (err) {
-                showStatus('Сталася помилка при читанні файлу.', 'error');
-            }
-        };
-        reader.readAsArrayBuffer(file);
+    // Strip BOM and detect ; vs , vs tab delimiter from the header line
+    function detectDelimiter(text){
+        const firstLine = text.split(/\r?\n/)[0] || '';
+        const counts = { ';': (firstLine.match(/;/g)||[]).length,
+                          ',': (firstLine.match(/,/g)||[]).length,
+                          '\t': (firstLine.match(/\t/g)||[]).length };
+        return Object.keys(counts).reduce((a,b)=> counts[b] > counts[a] ? b : a);
     }
 
-    // --- Build UI Mapping Table ---
+    function handleFile(file) {
+        const isCsv = /\.csv$/i.test(file.name);
+        if(isCsv){
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try{
+                    let text = e.target.result;
+                    if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1); // strip BOM
+                    const fs = detectDelimiter(text);
+                    const wb = XLSX.read(text, {type:'string', FS: fs});
+                    const sheet = wb.Sheets[wb.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, {defval:''});
+                    processRows(json, file.name);
+                } catch(err){
+                    showStatus('Сталася помилка при читанні CSV: ' + err.message, 'error');
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+        } else {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const wb = XLSX.read(data, {type:'array'});
+                    const sheet = wb.Sheets[wb.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet, {defval:''});
+                    processRows(json, file.name);
+                } catch (err) {
+                    showStatus('Сталася помилка при читанні файлу: ' + err.message, 'error');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    }
+
+    // Extract human-readable label from "(...)" part, if present
+    function extractCleanLabel(rawHeader) {
+        const match = rawHeader.match(/\(([^)]+)\)/);
+        return match && match[1] ? match[1].trim() : rawHeader.trim();
+    }
+
+    function processRows(json, fileName){
+        if (!json || json.length === 0) {
+            showStatus('Файл порожній або не вдалося прочитати дані.', 'error');
+            return;
+        }
+
+        rawHeaders = Object.keys(json[0]);
+        headers = rawHeaders.map(extractCleanLabel);
+
+        // rebuild rows keyed by clean label (data itself doesn't change)
+        rows = json.map(rawRow => {
+            const cleanRow = {};
+            rawHeaders.forEach(rh => { cleanRow[extractCleanLabel(rh)] = rawRow[rh]; });
+            return cleanRow;
+        });
+
+        showStatus(`Завантажено файл "${fileName}" • ${rows.length} записів • ${headers.length} колонок`, 'success');
+        buildMappingTable();
+        mappingCard.style.display = 'block';
+        convertCard.style.display = 'block';
+        mappingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Parses headers like "245$a (Назва)" or "001 (Системний ID)" straight into tag/subfield
+    function parseHeaderTagSub(rawHeader){
+        const m = rawHeader.trim().match(/^(\d{3})(?:\$([a-zA-Z0-9]))?/);
+        if(!m) return null;
+        return { tag: m[1], sub: m[2] || '' };
+    }
+
+    // Sensible default indicators per tag (used when a header directly encodes the tag)
+    const INDICATOR_DEFAULTS = {
+        '020': [' ',' '], '022': [' ',' '], '024': ['7',' '],
+        '080': [' ',' '],
+        '100': ['1',' '], '110': ['2',' '],
+        '245': ['0','0'],
+        '250': [' ',' '],
+        '260': [' ',' '], '264': [' ','1'],
+        '300': [' ',' '],
+        '490': ['0',' '],
+        '500': [' ',' '], '520': [' ',' '],
+        '650': [' ','4'], '651': [' ','4'],
+        '700': ['1',' '],
+        '773': ['0',' '],
+        '856': ['4','0'],
+    };
+
     function buildMappingTable() {
         mappingBody.innerHTML = '';
-        headers.forEach(h => {
+        headers.forEach((h, idx) => {
+            const rawH = rawHeaders[idx];
+            const parsed = parseHeaderTagSub(rawH);
             const tr = document.createElement('tr');
             tr.dataset.header = h;
+
+            let tagVal = '', ind1Val = '', ind2Val = '', subVal = 'a';
+            if(parsed){
+                tagVal = parsed.tag;
+                subVal = parsed.sub;
+                const defaults = INDICATOR_DEFAULTS[parsed.tag];
+                if(defaults){ ind1Val = defaults[0]; ind2Val = defaults[1]; }
+                if(/^00[0-9]$/.test(parsed.tag)) subVal = ''; // control field: no subfield
+            }
+
             tr.innerHTML = `
-                <td class="header-name">${h}</td>
-                <td><input class="table-input input-tag" maxlength="3" placeholder="245"></td>
-                <td><input class="table-input input-ind" maxlength="1" placeholder=" "></td>
-                <td><input class="table-input input-ind" maxlength="1" placeholder=" "></td>
-                <td><input class="table-input input-ind" maxlength="1" value="a"></td>
+                <td class="header-name">${h}<small>${rawH !== h ? rawH : ''}</small></td>
+                <td><input class="table-input input-tag" maxlength="3" placeholder="245" value="${tagVal}"></td>
+                <td><input class="table-input input-ind" maxlength="1" placeholder=" " value="${ind1Val}"></td>
+                <td><input class="table-input input-ind" maxlength="1" placeholder=" " value="${ind2Val}"></td>
+                <td><input class="table-input input-ind" maxlength="1" value="${subVal}"></td>
                 <td style="text-align:center;">
                     <input type="checkbox" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;" checked>
                 </td>
@@ -497,11 +520,11 @@
         });
     }
 
-    // --- Auto Guess Logic ---
+    // Fallback keyword-based guesses for files where headers are plain labels (no tag prefix)
     const GUESS_RULES = [
         [/автор|author/i,        {tag:'100', i1:'1', i2:' ', sub:'a'}],
         [/назв|заголов|title/i,  {tag:'245', i1:'0', i2:'0', sub:'a'}],
-        [/відомості|subtitle/i,  {tag:'245', i1:'0', i2:'0', sub:'b'}],
+        [/відомості.*назв|subtitle/i, {tag:'245', i1:'0', i2:'0', sub:'b'}],
         [/відповідаль/i,         {tag:'245', i1:'0', i2:'0', sub:'c'}],
         [/видан|edition/i,       {tag:'250', i1:' ', i2:' ', sub:'a'}],
         [/видавниц|видавець|pub/i,{tag:'264', i1:' ', i2:'1', sub:'b'}],
@@ -516,21 +539,30 @@
     ];
 
     document.getElementById('autoGuessBtn').addEventListener('click', () => {
-        [...mappingBody.children].forEach(tr => {
+        [...mappingBody.children].forEach((tr, idx) => {
+            const rawH = rawHeaders[idx];
+            const parsed = parseHeaderTagSub(rawH);
+            const inputs = tr.querySelectorAll('.table-input');
+            if(parsed){
+                inputs[0].value = parsed.tag;
+                const defaults = INDICATOR_DEFAULTS[parsed.tag];
+                inputs[1].value = defaults ? defaults[0] : ' ';
+                inputs[2].value = defaults ? defaults[1] : ' ';
+                inputs[3].value = /^00[0-9]$/.test(parsed.tag) ? '' : parsed.sub;
+                return;
+            }
             const h = tr.dataset.header;
             const rule = GUESS_RULES.find(([re]) => re.test(h));
             if(rule) {
                 const [,cfg] = rule;
-                tr.querySelector('.input-tag').value = cfg.tag;
-                const inds = tr.querySelectorAll('.input-ind');
-                inds[0].value = cfg.i1;
-                inds[1].value = cfg.i2;
-                inds[2].value = cfg.sub;
+                inputs[0].value = cfg.tag;
+                inputs[1].value = cfg.i1;
+                inputs[2].value = cfg.i2;
+                inputs[3].value = cfg.sub;
             }
         });
     });
 
-    // --- Save/Load Templates ---
     document.getElementById('saveTemplateBtn').addEventListener('click', () => {
         const cfg = readMapping();
         const blob = new Blob([JSON.stringify(cfg, null, 2)], {type:'application/json'});
@@ -542,7 +574,7 @@
     });
 
     document.getElementById('loadTemplateBtn').addEventListener('click', () => document.getElementById('templateInput').click());
-    
+
     document.getElementById('templateInput').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if(!file) return;
@@ -556,11 +588,11 @@
                     const h = tr.dataset.header;
                     const m = (cfg.fields||[]).find(f => f.header === h);
                     if(m) {
-                        tr.querySelector('.input-tag').value = m.tag || '';
-                        const inds = tr.querySelectorAll('.input-ind');
-                        inds[0].value = m.i1 || '';
-                        inds[1].value = m.i2 || '';
-                        inds[2].value = m.sub || '';
+                        const inputs = tr.querySelectorAll('.table-input');
+                        inputs[0].value = m.tag || '';
+                        inputs[1].value = m.i1 || '';
+                        inputs[2].value = m.i2 || '';
+                        inputs[3].value = m.sub || '';
                         tr.querySelector('input[type="checkbox"]').checked = m.skipEmpty !== false;
                     }
                 });
@@ -583,7 +615,7 @@
                 skipEmpty: tr.querySelector('input[type="checkbox"]').checked
             };
         }).filter(f => f.tag);
-        
+
         return {
             leaderType: document.getElementById('leaderType').value,
             leaderLevel: document.getElementById('leaderLevel').value,
@@ -606,9 +638,8 @@
         return out;
     }
 
-    function buildRecord(row, mapping, recordIndex) {
+    function groupByTag(row, mapping, recordIndex){
         const byTag = new Map();
-        
         mapping.fields.forEach(f => {
             const raw = row[f.header];
             const val = (raw === undefined || raw === null) ? '' : String(raw).trim();
@@ -616,23 +647,29 @@
             if (!byTag.has(f.tag)) byTag.set(f.tag, []);
             byTag.get(f.tag).push({...f, val});
         });
-
         if(!byTag.has('001')) byTag.set('001', [{val: String(recordIndex + 10000)}]);
+        return byTag;
+    }
 
-        const enc = new TextEncoder();
-        const fieldBytesList = [];
-
-        const tags = [...byTag.keys()].sort((a,b) => {
+    function sortedTags(byTag){
+        return [...byTag.keys()].sort((a,b) => {
             const an = /^\d+$/.test(a) ? parseInt(a) : 999;
             const bn = /^\d+$/.test(b) ? parseInt(b) : 999;
             return an - bn;
         });
+    }
+
+    function buildRecord(row, mapping, recordIndex) {
+        const byTag = groupByTag(row, mapping, recordIndex);
+        const enc = new TextEncoder();
+        const fieldBytesList = [];
+        const tags = sortedTags(byTag);
 
         tags.forEach(tag => {
             const entries = byTag.get(tag);
             const isControl = /^00[0-9]$/.test(tag);
             let bodyBytes;
-            
+
             if (isControl) {
                 const val = entries.map(e => e.val).join(' ');
                 bodyBytes = enc.encode(val);
@@ -641,7 +678,7 @@
                 const ind1 = (first.i1 || ' ').padEnd(1).slice(0,1);
                 const ind2 = (first.i2 || ' ').padEnd(1).slice(0,1);
                 const parts = [enc.encode(ind1 + ind2)];
-                
+
                 entries.forEach(e => {
                     if (e.val === '') return;
                     parts.push(new Uint8Array([SD]));
@@ -650,7 +687,7 @@
                 });
                 bodyBytes = concatBytes(parts);
             }
-            
+
             const withTerm = concatBytes([bodyBytes, new Uint8Array([FT])]);
             fieldBytesList.push({tag, bytes: withTerm});
         });
@@ -658,42 +695,41 @@
         let dataBytes = concatBytes(fieldBytesList.map(f => f.bytes));
         let dirEntries = [];
         let pos = 0;
-        
+
         fieldBytesList.forEach(f => {
             const tag3 = f.tag.padEnd(3,'0').slice(0,3);
             dirEntries.push(tag3 + pad(f.bytes.length, 4) + pad(pos, 5));
             pos += f.bytes.length;
         });
-        
+
         const directoryBytes = concatBytes([enc.encode(dirEntries.join('')), new Uint8Array([FT])]);
         const baseAddress = 24 + directoryBytes.length;
         const recordLength = baseAddress + dataBytes.length + 1;
 
-        const leader = pad(recordLength, 5) + 'n' + mapping.leaderType + mapping.leaderLevel + ' a22' + pad(baseAddress, 5) + '  i 4500';
+        // Leader: exactly 24 characters — every position accounted for individually.
+        const leader =
+            pad(recordLength, 5) +   // 00-04 record length
+            'n' +                     // 05 record status
+            mapping.leaderType +      // 06 type of record
+            mapping.leaderLevel +     // 07 bibliographic level
+            ' ' +                     // 08 type of control
+            'a' +                     // 09 character coding scheme (UTF-8)
+            '2' +                     // 10 indicator count
+            '2' +                     // 11 subfield code count
+            pad(baseAddress, 5) +     // 12-16 base address of data
+            ' ' +                     // 17 encoding level
+            'i' +                     // 18 descriptive cataloging form
+            ' ' +                     // 19 multipart resource record level
+            '4500';                   // 20-23 entry map
+
         const leaderBytes = enc.encode(leader);
-        
         return concatBytes([leaderBytes, directoryBytes, dataBytes, new Uint8Array([RT])]);
     }
 
-    // Preview generation
     function renderPreview(row, mapping, recordIndex) {
-        const byTag = new Map();
-        mapping.fields.forEach(f => {
-            const raw = row[f.header];
-            const val = (raw === undefined || raw === null) ? '' : String(raw).trim();
-            if(val === '' && f.skipEmpty) return;
-            if(!byTag.has(f.tag)) byTag.set(f.tag, []);
-            byTag.get(f.tag).push({...f, val});
-        });
-        
-        if(!byTag.has('001')) byTag.set('001', [{val: String(recordIndex + 10000)}]);
-        
-        const tags = [...byTag.keys()].sort((a,b) => {
-            const an = /^\d+$/.test(a) ? parseInt(a) : 999;
-            const bn = /^\d+$/.test(b) ? parseInt(b) : 999;
-            return an - bn;
-        });
-        
+        const byTag = groupByTag(row, mapping, recordIndex);
+        const tags = sortedTags(byTag);
+
         let html = '';
         tags.forEach(tag => {
             const entries = byTag.get(tag);
@@ -713,17 +749,16 @@
     document.getElementById('convertBtn').addEventListener('click', () => {
         const mapping = readMapping();
         const statusBox = document.getElementById('statusBox');
-        
+
         if(!mapping.fields.length) {
             showStatus('Не задано жодного тегу MARC. Заповніть хоча б одну колонку або натисніть «Автовизначення».', 'error', statusBox);
             return;
         }
-        
+
         try {
             const recordByteArrays = rows.map((row, i) => buildRecord(row, mapping, i));
             const all = concatBytes(recordByteArrays);
-            
-            // Download file
+
             const blob = new Blob([all], {type: 'application/marc'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -736,12 +771,11 @@
 
             showStatus(`Згенеровано файл: ${rows.length} записів, ${all.length} байт. Файл завантажується.`, 'success', statusBox);
 
-            // Show Preview
             const previewWrap = document.getElementById('previewWrap');
             const previewBox = document.getElementById('previewBox');
             previewWrap.style.display = 'block';
             previewBox.innerHTML = "// ПЕРЕГЛЯД ПЕРШОГО ЗАПИСУ\n\n" + renderPreview(rows[0], mapping, 0);
-            
+
         } catch(err) {
             showStatus(`Помилка конвертації: ${err.message}`, 'error', statusBox);
         }
