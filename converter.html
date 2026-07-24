@@ -573,7 +573,7 @@
 
     function readMapping() {
         const fields = [...mappingBody.children].map(tr => {
-            const inputs = tr.querySelectorAll('input[type="text"]');
+            const inputs = tr.querySelectorAll('.table-input');
             return {
                 header: tr.dataset.header,
                 tag: inputs[0].value.trim(),
@@ -727,8 +727,11 @@
             const blob = new Blob([all], {type: 'application/marc'});
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
+            a.style.display = 'none';
             a.href = url; a.download = 'records.mrc';
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
             showStatus(`Згенеровано файл: ${rows.length} записів, ${all.length} байт. Файл завантажується.`, 'success', statusBox);
