@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Міф чи правда? | Сучасні бібліотеки</title>
+    <title>Сучасна Бібліотека | Студентський проєкт</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --bg-color: #F8FAFC;
+            --bg-color: #FAFAFA; /* Більш "паперовий", м'який білий колір */
             --card-bg: #FFFFFF;
             --primary: #22A06B;
-            --primary-hover: #1e8b5d;
-            --text-main: #1F2937;
+            --text-main: #111827; /* Майже чорний, виглядає дорожче */
             --text-muted: #6B7280;
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --border-color: #E5E7EB;
+            --transition: all 0.3s ease;
         }
 
         * {
@@ -27,321 +27,319 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            /* Додаємо спеціальні налаштування шрифту для більш професійного вигляду (як в Apple/Notion) */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
             background-color: var(--bg-color);
             color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        #app {
-            width: 100%;
-            max-width: 480px;
-            background-color: var(--bg-color);
+            line-height: 1.5;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px; /* Звужуємо максимальну ширину для кращої читабельності */
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 24px;
+            padding: 32px 0;
+            border-bottom: 1px solid transparent; /* Заготовка під можливий бордер */
         }
 
-        .icon-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-        }
-
-        .icon-btn:active { transform: scale(0.9); }
-
-        .menu-icon svg {
-            width: 28px;
-            height: 28px;
-            stroke: var(--text-main);
-            stroke-width: 2.5;
-        }
-
-        .title {
-            font-size: 18px;
+        .logo {
+            font-size: 16px;
             font-weight: 700;
             letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .book-icon-wrapper {
+        .logo-dot {
+            width: 8px;
+            height: 8px;
             background-color: var(--primary);
-            width: 40px;
-            height: 40px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(34, 160, 107, 0.3);
         }
 
-        .book-icon-wrapper svg {
-            width: 20px;
-            height: 20px;
-            fill: none;
-            stroke: #FFF;
-            stroke-width: 2;
+        .hero {
+            padding: 64px 0 48px;
+            max-width: 700px; /* Текст не розтягується на всю ширину */
         }
 
-        main {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            padding: 0 24px 40px;
-            text-align: center;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .project-badge {
-            background-color: #E0F2FE;
-            color: #0369A1;
-            padding: 6px 16px;
-            border-radius: 100px;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 16px;
+        .eyebrow {
             display: inline-block;
-        }
-
-        .main-title {
-            font-size: 32px;
-            font-weight: 800;
-            line-height: 1.2;
-            letter-spacing: -0.02em;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
             margin-bottom: 16px;
         }
 
-        .main-title span {
+        .hero h1 {
+            font-size: 40px;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 span {
             color: var(--primary);
         }
 
-        .project-description {
-            font-size: 16px;
+        .hero p {
+            font-size: 18px;
             color: var(--text-muted);
             line-height: 1.6;
-            margin-bottom: 32px;
+            margin-bottom: 0;
         }
 
-        .section-subtitle {
-            font-size: 20px;
-            font-weight: 700;
-            width: 100%;
-            text-align: left;
-            margin-bottom: 16px;
-            color: var(--text-main);
+        .tools-section {
+            margin-bottom: 64px;
         }
 
-        .nav-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            width: 100%;
-            margin-bottom: 40px;
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
         }
 
-        .nav-card {
+        .card {
             background-color: var(--card-bg);
-            border-radius: 24px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 24px; /* Збільшили відступи для повітря */
             text-decoration: none;
             color: inherit;
+            display: flex;
+            flex-direction: column; /* Завжди колонка */
+            align-items: center; /* Центруємо по горизонталі */
+            text-align: center; /* Текст по центру */
             transition: var(--transition);
-            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
 
-        .nav-card:active {
-            transform: scale(0.97);
+        /* Тінь та колір рамки при наведенні */
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 16px 32px -12px rgba(34, 160, 107, 0.15);
         }
 
-        .nav-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 18px;
+        .card:active {
+            transform: translateY(0);
+        }
+
+        /* Контейнер для нових красивих ілюстрацій */
+        .card-illustration {
+            width: 160px;
+            height: 160px;
+            margin-bottom: 24px;
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); /* Плавний пружний ефект */
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
         }
 
-        /* Кольорові акценти для кожної картки */
-        .nav-card.green:hover { border-color: var(--primary); box-shadow: 0 8px 24px rgba(34, 160, 107, 0.15); }
-        .nav-card.green .nav-icon { background-color: #DCFCE7; color: var(--primary); }
-        
-        .nav-card.blue:hover { border-color: #0284C7; box-shadow: 0 8px 24px rgba(2, 132, 199, 0.15); }
-        .nav-card.blue .nav-icon { background-color: #E0F2FE; color: #0284C7; }
-        
-        .nav-card.purple:hover { border-color: #7C3AED; box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15); }
-        .nav-card.purple .nav-icon { background-color: #EDE9FE; color: #7C3AED; }
-
-        .nav-content {
-            text-align: left;
-            flex: 1;
+        .card:hover .card-illustration {
+            transform: scale(1.08) translateY(-5px); /* Ілюстрація "підстрибує" */
         }
 
-        .nav-title {
-            font-size: 18px;
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 22px;
             font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .nav-desc {
-            font-size: 14px;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        .nav-arrow {
-            color: var(--text-muted);
-            opacity: 0.5;
-            transition: var(--transition);
-        }
-        
-        .nav-card:hover .nav-arrow {
-            transform: translateX(4px);
-            opacity: 1;
+            margin-bottom: 12px;
             color: var(--text-main);
+        }
+
+        .card-desc {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
 
         footer {
             margin-top: auto;
-            padding: 24px;
-            text-align: center;
-            border-top: 1px solid #E5E7EB;
-            width: 100%;
+            padding: 40px 0;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .footer-title {
-            font-size: 14px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 4px;
+            color: #9CA3AF;
         }
 
         .footer-authors {
-            font-size: 13px;
-            color: #9CA3AF;
-            font-weight: 500;
-            line-height: 1.5;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 400;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @media (min-width: 768px) {
+            .hero {
+                padding: 100px 0 64px;
+            }
 
-        /* SVG utilities */
-        .svg-flat { width: 100%; height: 100%; }
+            .hero h1 {
+                font-size: 56px;
+            }
+
+            .hero p {
+                font-size: 20px;
+                max-width: 85%;
+            }
+
+            /* На ПК перетворюємо на 3 колонки */
+            .tools-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 24px;
+            }
+
+            footer {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div id="app">
+<div class="container">
     <header>
-        <button class="icon-btn menu-icon" aria-label="Меню">
-            <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-            </svg>
-        </button>
-        <h1 class="title">Міф чи правда?</h1>
-        <div class="book-icon-wrapper">
-            <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
-            </svg>
+        <div class="logo">
+            <div class="logo-dot"></div>
+            Сучасна Бібліотека
         </div>
     </header>
 
     <main>
-        <div class="project-badge">Про проєкт</div>
-        
-        <h2 class="main-title">Сучасна<br><span>Бібліотека</span></h2>
-        
-        <p class="project-description">
-            Забудьте про стереотипи, пил та абсолютну тишу. Сьогодні бібліотеки України — це інноваційні простори, коворкінги та центри цифрової освіти, відкриті для кожного.
-        </p>
+        <section class="hero">
+            <span class="eyebrow">Освітній проєкт</span>
+            <h1>Бібліотека — це давно не про пил та <br><span>абсолютну тишу.</span></h1>
+            <p>
+                Ми досліджуємо, як змінюються інформаційні простори сьогодні. 
+                Перевірте свої знання у грі, знайдіть сучасні видання в каталозі або скористайтеся інструментом для роботи з бібліотечними даними.
+            </p>
+        </section>
 
-        <h3 class="section-subtitle">Проєкти та інструменти</h3>
-        
-        <div class="nav-grid">
-            <!-- Кнопка 1: Гра -->
-            <a href="game.html" class="nav-card green">
-                <div class="nav-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                </div>
-                <div class="nav-content">
-                    <h4 class="nav-title">Міф чи правда?</h4>
-                    <p class="nav-desc">Інтерактивна гра-тест</p>
-                </div>
-                <div class="nav-arrow">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </div>
-            </a>
+        <section class="tools-section">
+            <div class="tools-grid">
+                
+                <!-- Картка 1: Гра -->
+                <a href="game.html" class="card">
+                    <div class="card-illustration">
+                        <!-- Гарна SVG ілюстрація для Гри -->
+                        <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="70" cy="70" r="60" fill="#F0FDF4" />
+                            <!-- Картка "Міф" (Червона) -->
+                            <g transform="rotate(-12 50 70)">
+                                <rect x="25" y="35" width="45" height="60" rx="8" fill="white" stroke="#EF4444" stroke-width="2.5"/>
+                                <path d="M38 55L57 75M57 55L38 75" stroke="#EF4444" stroke-width="3.5" stroke-linecap="round"/>
+                            </g>
+                            <!-- Картка "Правда" (Зелена) -->
+                            <g transform="rotate(8 90 70)">
+                                <rect x="70" y="45" width="45" height="60" rx="8" fill="white" stroke="#22A06B" stroke-width="2.5"/>
+                                <path d="M82 72L90 80L102 60" stroke="#22A06B" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </g>
+                            <!-- Декоративні елементи -->
+                            <circle cx="115" cy="30" r="4" fill="#F59E0B"/>
+                            <circle cx="25" cy="105" r="5" fill="#2D7FF9"/>
+                            <circle cx="105" cy="115" r="3" fill="#22A06B"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">Міф чи правда?</div>
+                        <div class="card-desc">Інтерактивна мінігра, що розвінчує популярні стереотипи. Перевірте свої знання.</div>
+                    </div>
+                </a>
 
-            <!-- Кнопка 2: Каталог -->
-            <a href="catalog.html" class="nav-card blue">
-                <div class="nav-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                </div>
-                <div class="nav-content">
-                    <h4 class="nav-title">Каталог</h4>
-                    <p class="nav-desc">Пошук сучасних видань</p>
-                </div>
-                <div class="nav-arrow">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </div>
-            </a>
+                <!-- Картка 2: Каталог -->
+                <a href="catalog.html" class="card">
+                    <div class="card-illustration">
+                        <!-- Гарна SVG ілюстрація для Каталогу -->
+                        <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="70" cy="70" r="60" fill="#EFF6FF" />
+                            <!-- Планшет / Інтерфейс -->
+                            <rect x="25" y="35" width="90" height="70" rx="8" fill="white" stroke="#2D7FF9" stroke-width="2.5"/>
+                            <rect x="35" y="45" width="70" height="10" rx="5" fill="#DBEAFE"/>
+                            <!-- Елементи сітки каталогу -->
+                            <rect x="35" y="65" width="18" height="24" rx="4" fill="#93C5FD"/>
+                            <rect x="61" y="65" width="18" height="24" rx="4" fill="#22A06B"/>
+                            <rect x="87" y="65" width="18" height="24" rx="4" fill="#F59E0B"/>
+                            <!-- Лупа (Пошук) -->
+                            <circle cx="105" cy="30" r="10" fill="white" stroke="#1E3A8A" stroke-width="2.5"/>
+                            <path d="M112 37L120 45" stroke="#1E3A8A" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">Електронний каталог</div>
+                        <div class="card-desc">Сучасний пошук видань за допомогою новітньої системи класифікації.</div>
+                    </div>
+                </a>
 
-            <!-- Кнопка 3: Конвертор -->
-            <a href="converter.html" class="nav-card purple">
-                <div class="nav-icon">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                        <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
-                        <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
-                        <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
-                        <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                        <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                    </svg>
-                </div>
-                <div class="nav-content">
-                    <h4 class="nav-title">MARC-конвертор</h4>
-                    <p class="nav-desc">Генерація з таблиць</p>
-                </div>
-                <div class="nav-arrow">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-                </div>
-            </a>
-        </div>
+                <!-- Картка 3: Конвертор -->
+                <a href="converter.html" class="card">
+                    <div class="card-illustration">
+                        <!-- Гарна SVG ілюстрація для Конвертора -->
+                        <svg viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="70" cy="70" r="60" fill="#F3F4F6" />
+                            <!-- Таблиця (Вхідні дані) -->
+                            <rect x="20" y="40" width="40" height="55" rx="6" fill="white" stroke="#6B7280" stroke-width="2.5"/>
+                            <line x1="20" y1="58" x2="60" y2="58" stroke="#6B7280" stroke-width="2.5"/>
+                            <line x1="35" y1="58" x2="35" y2="95" stroke="#6B7280" stroke-width="2.5"/>
+                            
+                            <!-- Стрілка конвертації -->
+                            <path d="M68 68L80 68M75 63L81 68L75 73" stroke="#22A06B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            
+                            <!-- Термінал / MARC (Вихідні дані) -->
+                            <rect x="85" y="40" width="35" height="55" rx="6" fill="#1F2937" stroke="#1F2937" stroke-width="2.5"/>
+                            <!-- Рядки коду -->
+                            <line x1="92" y1="52" x2="105" y2="52" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="92" y1="64" x2="113" y2="64" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="92" y1="76" x2="108" y2="76" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+                            <line x1="92" y1="88" x2="98" y2="88" stroke="#10B981" stroke-width="3" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-title">MARC-конвертор</div>
+                        <div class="card-desc">Професійний інструмент для генерації машиночитних записів з таблиць.</div>
+                    </div>
+                </a>
+
+            </div>
+        </section>
     </main>
 
     <footer>
-        <p class="footer-title">Автори проєкту:</p>
-        <p class="footer-authors">Анастасія Салтикова, Шевчук Олександр, Валерія Петренко</p>
+        <span class="footer-title">Над проєктом працювали</span>
+        <span class="footer-authors">Анастасія Салтикова, Олександр Шевчук, Валерія Петренко</span>
     </footer>
 </div>
 
