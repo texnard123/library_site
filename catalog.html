@@ -2,6 +2,14 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3P7NGYPV2Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3P7NGYPV2Y');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Електронний каталог | Сучасні бібліотеки</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -640,6 +648,16 @@
     }
 
     function openModal(book) {
+        // Відстеження кліку на книгу в Google Analytics 4
+        if (typeof gtag === "function") {
+            gtag('event', 'select_book', {
+                'book_title': book.title,
+                'book_author': book.author,
+                'event_category': 'catalog',
+                'event_label': book.title
+            });
+        }
+
         modalTitle.textContent = book.title;
         modalAuthor.textContent = book.author || "";
 
