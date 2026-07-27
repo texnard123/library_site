@@ -2,6 +2,14 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3P7NGYPV2Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3P7NGYPV2Y');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MARC-конвертор | Сучасна Бібліотека</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -403,6 +411,16 @@
 
     function handleFile(file) {
         const isCsv = /\.csv$/i.test(file.name);
+
+        // Відстеження завантаження файлу в Google Analytics
+        if (typeof gtag === "function") {
+            gtag('event', 'file_upload_start', {
+                'file_type': isCsv ? 'csv' : 'excel',
+                'file_name': file.name,
+                'event_category': 'marc_converter'
+            });
+        }
+
         if(isCsv){
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -416,6 +434,9 @@
                     processRows(json, file.name);
                 } catch(err){
                     showStatus('Сталася помилка при читанні CSV: ' + err.message, 'error');
+                    if (typeof gtag === "function") {
+                        gtag('event', 'file_parse_error', { 'error_message': err.message, 'event_category': 'marc_converter' });
+                    }
                 }
             };
             reader.readAsText(file, 'UTF-8');
@@ -430,6 +451,9 @@
                     processRows(json, file.name);
                 } catch (err) {
                     showStatus('Сталася помилка при читанні файлу: ' + err.message, 'error');
+                    if (typeof gtag === "function") {
+                        gtag('event', 'file_parse_error', { 'error_message': err.message, 'event_category': 'marc_converter' });
+                    }
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -463,6 +487,15 @@
         mappingCard.style.display = 'block';
         convertCard.style.display = 'block';
         mappingCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        if (typeof gtag === "function") {
+            gtag('event', 'file_upload_success', {
+                'file_name': fileName,
+                'record_count': rows.length,
+                'column_count': headers.length,
+                'event_category': 'marc_converter'
+            });
+        }
     }
 
     // Parses headers like "245$a (Назва)" or "001 (Системний ID)" straight into tag/subfield
@@ -561,6 +594,10 @@
                 inputs[3].value = cfg.sub;
             }
         });
+
+        if (typeof gtag === "function") {
+            gtag('event', 'auto_guess_click', { 'event_category': 'marc_converter' });
+        }
     });
 
     document.getElementById('saveTemplateBtn').addEventListener('click', () => {
@@ -571,6 +608,10 @@
         a.href = url; a.download = 'marc21-template.json';
         a.click();
         URL.revokeObjectURL(url);
+
+        if (typeof gtag === "function") {
+            gtag('event', 'save_template', { 'event_category': 'marc_converter' });
+        }
     });
 
     document.getElementById('loadTemplateBtn').addEventListener('click', () => document.getElementById('templateInput').click());
@@ -596,6 +637,9 @@
                         tr.querySelector('input[type="checkbox"]').checked = m.skipEmpty !== false;
                     }
                 });
+                if (typeof gtag === "function") {
+                    gtag('event', 'load_template', { 'event_category': 'marc_converter' });
+                }
             } catch(err) {
                 alert('Не вдалося прочитати шаблон: ' + err.message);
             }
@@ -776,8 +820,20 @@
             previewWrap.style.display = 'block';
             previewBox.innerHTML = "// ПЕРЕГЛЯД ПЕРШОГО ЗАПИСУ\n\n" + renderPreview(rows[0], mapping, 0);
 
+            // Відстеження успішної конвертації в Google Analytics
+            if (typeof gtag === "function") {
+                gtag('event', 'marc_export_success', {
+                    'record_count': rows.length,
+                    'file_size_bytes': all.length,
+                    'event_category': 'marc_converter'
+                });
+            }
+
         } catch(err) {
             showStatus(`Помилка конвертації: ${err.message}`, 'error', statusBox);
+            if (typeof gtag === "function") {
+                gtag('event', 'marc_export_error', { 'error_message': err.message, 'event_category': 'marc_converter' });
+            }
         }
     });
 </script>
