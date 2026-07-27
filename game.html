@@ -2,6 +2,14 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3P7NGYPV2Y"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-3P7NGYPV2Y');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Гра: Міф чи правда? | Сучасні бібліотеки</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -841,6 +849,13 @@
         resultView.style.display = 'none';
         quizView.style.display = 'flex';
         renderQuestion();
+
+        // Відстеження старту гри в Google Analytics
+        if (typeof gtag === "function") {
+            gtag('event', 'game_start', {
+                'event_category': 'myth_or_truth_game'
+            });
+        }
     }
 
     function renderQuestion() {
@@ -884,6 +899,16 @@
         controls.style.display = 'none';
         feedbackContainer.style.display = 'flex';
         btnNext.style.display = 'flex';
+
+        // Відстеження відповіді на питання в Google Analytics
+        if (typeof gtag === "function") {
+            gtag('event', 'question_answered', {
+                'question_number': currentQuestionIndex + 1,
+                'question_text': q.text,
+                'is_correct': isCorrect,
+                'event_category': 'myth_or_truth_game'
+            });
+        }
     }
 
     function nextQuestion() {
@@ -915,6 +940,15 @@
         }
 
         triggerConfetti();
+
+        // Відстеження завершення гри в Google Analytics
+        if (typeof gtag === "function") {
+            gtag('event', 'game_complete', {
+                'score': score,
+                'total_questions': questions.length,
+                'event_category': 'myth_or_truth_game'
+            });
+        }
     }
 
     function resetGame() {
